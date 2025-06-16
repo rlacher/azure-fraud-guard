@@ -1,0 +1,5 @@
+# Terraform files to ignore in MVP
+infra/.terraform/
+infra/.terraform.lock.hcl
+infra/*.tfvars*
+infra/*.tfstate*

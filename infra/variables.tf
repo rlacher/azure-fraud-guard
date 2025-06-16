@@ -1,3 +1,25 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2025 René Lacher
-# Placeholder for variable declarations
+
+variable "location" {
+  description = "Azure region for resource deployment"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "subscription_id" {
+  description = "Azure subscription under which resources will be created"
+  type        = string
+  sensitive   = true
+}
+
+variable "admin_username" {
+  description = "Admin username for VM"
+  type        = string
+}
+
+variable "admin_password" {
+  description = "Admin password for VM"
+  type        = string
+  sensitive   = true
+}

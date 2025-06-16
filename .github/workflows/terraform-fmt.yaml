@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 René Lacher
+
+name: 'Terraform Format Check'
+
+on:
+  push:
+    paths:
+      - 'infra/**.tf'
+  pull_request:
+    paths:
+      - 'infra/**.tf'
+
+jobs:
+  terraform-fmt:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
