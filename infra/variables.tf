@@ -23,3 +23,8 @@ variable "admin_password" {
   type        = string
   sensitive   = true
 }
+
+variable "ssh_public_key" {
+  description = "SSH public key for VM; set via TF_VAR_SSH_PUBLIC_KEY locally or GitHub Secrets in CI."
+  type        = string
+}

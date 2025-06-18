@@ -34,13 +34,19 @@ Foundation for an end-to-end cloud-native fraud detection pipeline on Azure.
    terraform init
    ```
 
-4. Provide required variables either in a `.tfvars` file or as environment variables:
+4. Set the SSH public key as an environment variable for Terraform:
+
+   ```bash
+   export TF_VAR_SSH_PUBLIC_KEY="$(cat ~/.ssh/azure_vm_key.pub)"
+   ```
+
+5. Provide required variables either in a `.tfvars` file or as environment variables:
 
     - `subscription_id` (Azure subscription ID)
     - `admin_username` (VM admin username)
     - `admin_password` (VM admin password)
 
-5. Apply the Terraform configuration to provision resources:
+6. Apply the Terraform configuration to provision resources:
 
     ```bash
     terraform apply -auto-approve
