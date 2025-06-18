@@ -1,11 +1,40 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2025 René Lacher
-# Provision of cloud resources, VM setup and Docker install
+# Provision of network-related resources
 
 resource "azurerm_resource_group" "rg" {
   name     = "fraud-guard-rg"
   location = var.location
   tags     = local.common_tags
+}
+
+resource "azurerm_public_ip" "vm_public_ip" {
+  name                = "vmPublicIP"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+  tags                = local.common_tags
+}
+
+resource "azurerm_network_security_group" "vm_nsg" {
+  name                = "vmNSG"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  security_rule {
+    name                       = "Allow-SSH-Port-22"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  tags = local.common_tags
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -23,7 +52,6 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["192.168.0.128/25"]
 }
 
-# Public IP omitted intentionally for security; internal-only access; health monitored through logs.
 resource "azurerm_network_interface" "nic" {
   name                = "fraud-guard-nic"
   location            = azurerm_resource_group.rg.location
@@ -33,8 +61,13 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    private_ip_address_version    = "IPv4"
+    public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
   }
 
   tags = local.common_tags
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.vm_nsg.id
 }
