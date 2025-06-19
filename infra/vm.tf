@@ -11,6 +11,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   admin_password                  = var.admin_password
   disable_password_authentication = false
   computer_name                   = "fraudguard"
+  depends_on                      = [azurerm_network_interface.nic]
 
   os_disk {
     caching              = "ReadWrite"
@@ -27,6 +28,19 @@ resource "azurerm_linux_virtual_machine" "vm" {
     offer     = "ubuntu-24_04-lts"
     sku       = "server"
     version   = "latest"
+  }
+
+  provisioner "file" {
+    source      = "../kafka/docker-compose.yaml"
+    destination = "/home/${var.admin_username}/docker-compose.yaml"
+
+    connection {
+      type        = "ssh"
+      host        = azurerm_public_ip.vm_public_ip.ip_address
+      user        = var.admin_username
+      private_key = file("~/.ssh/azure_vm_key")
+      timeout     = "1m"
+    }
   }
 
   provisioner "remote-exec" {
@@ -50,6 +64,22 @@ resource "azurerm_linux_virtual_machine" "vm" {
 
       # Add user to Docker group
       "sudo usermod -aG docker ${var.admin_username}",
+    ]
+
+    connection {
+      type        = "ssh"
+      host        = azurerm_public_ip.vm_public_ip.ip_address
+      user        = var.admin_username
+      private_key = file("~/.ssh/azure_vm_key")
+      timeout     = "1m"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # Wait for docker to be ready before running compose
+      "until docker info >/dev/null 2>&1; do echo 'Waiting for Docker...'; sleep 5; done",
+      "sudo docker compose -f /home/${var.admin_username}/docker-compose.yaml up -d"
     ]
 
     connection {

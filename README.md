@@ -52,6 +52,8 @@ Foundation for an end-to-end cloud-native fraud detection pipeline on Azure.
     terraform apply -auto-approve
     ```
 
+*Note:* Kafka is automatically installed and started on the Azure VM during provisioning, serving as an asynchronous event stream for fraud detection. No manual setup needed.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
