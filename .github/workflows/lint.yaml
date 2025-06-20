@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2025 René Lacher
+
+name: Lint with Flake8
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+
+    - name: Run Flake8
+      run: flake8 data app model --count --show-source --statistics
