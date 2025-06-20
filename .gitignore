@@ -1,5 +1,13 @@
-# Terraform files to ignore in MVP
+# Terraform files and state to ignore in MVP
 infra/.terraform/
 infra/.terraform.lock.hcl
 infra/*.tfvars*
 infra/*.tfstate*
+
+# Python bytecode cache and virtual environment
+__pycache__/
+*.py[cod]
+venv/
+
+# Downloaded datasets
+data/*.csv

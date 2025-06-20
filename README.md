@@ -54,6 +54,37 @@ Foundation for an end-to-end cloud-native fraud detection pipeline on Azure.
 
 *Note:* Kafka is automatically installed and started on the Azure VM during provisioning, serving as an asynchronous event stream for fraud detection. No manual setup needed.
 
+## Dataset
+
+This project uses the [Credit Card Fraud dataset (ID: 45955)](https://www.openml.org/d/45955) available on OpenML under the CC0 Public Domain licence.
+
+### Feature Description
+
+- **Task**: Supervised binary classification
+- **Target variable**: `fraud` (1 = fraud, 0 = legitimate)
+- **Samples**: 1,000,000 transactions
+- **Fraud cases**: 87,403 (8.7%) — imbalanced dataset
+- **Features (8)**:
+  - `distance_from_home`: Distance from cardholder’s home
+  - `distance_from_last_transaction`: Distance from previous transaction
+  - `ratio_to_median_purchase_price`: Transaction price relative to median spend
+  - `repeat_retailer`: 1 if retailer previously used; else 0
+  - `used_chip`: 1 if card chip used; else 0
+  - `used_pin_number`: 1 if PIN entered; else 0
+  - `online_order`: 1 if transaction online; else 0
+
+The dataset is labelled and imbalanced, reflecting the nature of real-world fraud detection problems. No preprocessing or feature engineering was applied before model development.
+
+### Download Instructions
+
+To download the dataset automatically:
+
+```bash
+python3 data/download.py
+```
+
+<!-- Original Kaggle source: https://www.kaggle.com/datasets/dhanushnarayananr/credit-card-fraud -->
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
