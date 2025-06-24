@@ -20,6 +20,8 @@ services:
     - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
     # Log directory inside container mapped to named volume
     - KAFKA_LOG_DIRS=/var/lib/kafka/data
+    # Enable auto topic creation for MVP-context
+    - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     healthcheck:
       # Minimal check if broker port is listening
       test: ["CMD", "nc", "-z", "localhost", "9092"]
@@ -30,6 +32,20 @@ services:
     - kafka-data:/var/lib/kafka/data
     networks:
     - kafka-net
+
+  producer:
+    build:
+      context: ../data
+      args:
+      - DATA_FILENAME=card_transdata.csv
+    container_name: kafka-producer
+    command: python3 producer.py
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - kafka-net
+    restart: on-failure
 
 volumes:
   kafka-data:

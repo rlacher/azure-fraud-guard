@@ -11,3 +11,9 @@ venv/
 
 # Downloaded datasets
 data/*.csv
+
+# pytest-cov database
+.coverage
+
+# Project archive
+azure-fraud-guard.tar.gz

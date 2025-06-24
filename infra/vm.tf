@@ -31,8 +31,24 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   provisioner "file" {
-    source      = "../kafka/docker-compose.yaml"
-    destination = "/home/${var.admin_username}/docker-compose.yaml"
+    source      = "../azure-fraud-guard.tar.gz"
+    destination = "/tmp/azure-fraud-guard.tar.gz"
+
+    connection {
+      type        = "ssh"
+      host        = azurerm_public_ip.vm_public_ip.ip_address
+      user        = var.admin_username
+      private_key = file("~/.ssh/azure_vm_key")
+      timeout     = "1m"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /home/${var.admin_username}/azure-fraud-guard",
+      "tar -xzf /tmp/azure-fraud-guard.tar.gz -C /home/${var.admin_username}/azure-fraud-guard",
+      "rm /tmp/azure-fraud-guard.tar.gz"
+    ]
 
     connection {
       type        = "ssh"
@@ -79,7 +95,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     inline = [
       # Wait for docker to be ready before running compose
       "until docker info >/dev/null 2>&1; do echo 'Waiting for Docker...'; sleep 5; done",
-      "sudo docker compose -f /home/${var.admin_username}/docker-compose.yaml up -d"
+      "sudo docker compose -f /home/${var.admin_username}/azure-fraud-guard/kafka/docker-compose.yaml up -d"
     ]
 
     connection {

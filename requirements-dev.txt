@@ -1,2 +1,4 @@
 pre-commit
 flake8
+pytest
+pytest-cov

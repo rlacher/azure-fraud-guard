@@ -4,6 +4,7 @@
 [![terraform-format](https://img.shields.io/github/actions/workflow/status/rlacher/azure-fraud-guard/terraform-fmt.yaml?label=terraform-format&style=flat)](https://github.com/rlacher/azure-fraud-guard/actions/workflows/terraform-fmt.yaml)
 [![terraform-validate](https://img.shields.io/github/actions/workflow/status/rlacher/azure-fraud-guard/terraform-validate.yaml?label=terraform-validate&style=flat)](https://github.com/rlacher/azure-fraud-guard/actions/workflows/terraform-validate.yaml)
 [![flake8](https://img.shields.io/github/actions/workflow/status/rlacher/azure-fraud-guard/lint.yaml?label=flake8&style=flat)](https://github.com/rlacher/azure-fraud-guard/actions/workflows/lint.yaml)
+[![pytest](https://img.shields.io/github/actions/workflow/status/rlacher/azure-fraud-guard/test.yaml?label=pytest&style=flat)](https://github.com/rlacher/azure-fraud-guard/actions/workflows/test.yaml)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://spdx.org/licenses/MIT.html)
 
 Foundation for an end-to-end cloud-native fraud detection pipeline on Azure.
@@ -50,6 +51,8 @@ Foundation for an end-to-end cloud-native fraud detection pipeline on Azure.
 6. Apply the Terraform configuration to provision resources:
 
     ```bash
+    infra/scripts/pre-apply.sh
+    cd infra
     terraform apply -auto-approve
     ```
 
