@@ -37,7 +37,9 @@ services:
     build:
       context: ../data
       args:
-      - DATA_FILENAME=card_transdata.csv
+      - DATA_FILENAME=${DATA_FILENAME}
+    environment:
+      - DATA_FILENAME=${DATA_FILENAME}
     container_name: kafka-producer
     command: python3 producer.py
     depends_on:

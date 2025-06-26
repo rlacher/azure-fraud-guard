@@ -15,6 +15,8 @@ COPY producer.py \
 RUN pip3 install --no-cache-dir \
     -r requirements.txt
 
+RUN test -n "$DATA_FILENAME"
+
 RUN python3 download.py
 
 CMD ["python3", "producer.py"]

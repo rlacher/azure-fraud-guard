@@ -2,7 +2,17 @@
 # Copyright (c) 2025 René Lacher
 # Download script for dataset from OpenML
 
+import os
 import openml
+
+
+def get_output_filename() -> str:
+    filename = os.getenv("DATA_FILENAME")
+    if not filename:
+        raise RuntimeError(
+            "Environment variable 'DATA_FILENAME' is not defined."
+        )
+    return filename
 
 
 def download_openml_dataset(dataset_id: int, output_file: str) -> None:
@@ -13,23 +23,21 @@ def download_openml_dataset(dataset_id: int, output_file: str) -> None:
         dataset_id: OpenML dataset ID.
         output_file: Filename for the saved CSV.
     """
-    # Retrieve dataset from OpenML
+    # Retrieve dataset metadata and data
     dataset = openml.datasets.get_dataset(dataset_id)
+    df, _, _, _ = dataset.get_data(dataset_format="dataframe")
 
-    # Load data as pandas DataFrame (features) and Series (target)
-    X, y, _, _ = dataset.get_data(dataset_format="dataframe")
+    # Ensure the label column exists
+    if 'fraud' not in df.columns:
+        raise ValueError("Expected label column 'fraud' not found in dataset.")
 
-    # Combine features and target into a single DataFrame
-    df = X.copy()
-    df['fraud'] = y
-
-    # Save DataFrame to CSV
+    # Save dataset to CSV using standard encoding and separator
     df.to_csv(output_file, sep=",", index=False, encoding="utf-8")
 
-    print(f"Dataset saved to {output_file}")
+    print(f"Dataset saved to: {output_file}")
 
 
 if __name__ == "__main__":
     DATASET_ID = 45955
-    OUTPUT_CSV = "card_transdata.csv"
+    OUTPUT_CSV = get_output_filename()
     download_openml_dataset(DATASET_ID, OUTPUT_CSV)
