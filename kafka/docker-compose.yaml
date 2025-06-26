@@ -20,8 +20,8 @@ services:
     - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
     # Log directory inside container mapped to named volume
     - KAFKA_LOG_DIRS=/var/lib/kafka/data
-    # Enable auto topic creation for MVP-context
-    - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+    # Topic will be created by a dedicated init service
+    - KAFKA_AUTO_CREATE_TOPICS_ENABLE=false
     healthcheck:
       # Minimal check if broker port is listening
       test: ["CMD", "nc", "-z", "localhost", "9092"]
@@ -33,6 +33,17 @@ services:
     networks:
     - kafka-net
 
+  topic-creator:
+      image: apache/kafka:3.9.1
+      container_name: kafka-topic-creator
+      depends_on:
+        kafka:
+          condition: service_healthy
+      networks:
+        - kafka-net
+      command: ["/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka-kraft:9092", "--create", "--topic", "transactions"]
+      restart: no
+
   producer:
     build:
       context: ../data
@@ -43,8 +54,8 @@ services:
     container_name: kafka-producer
     command: python3 producer.py
     depends_on:
-      kafka:
-        condition: service_healthy
+      topic-creator:
+        condition: service_completed_successfully
     networks:
       - kafka-net
     restart: on-failure
